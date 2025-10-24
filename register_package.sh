@@ -40,6 +40,15 @@ echo "foxglove_bridge" > "${ROS_PREFIX}/share/ament_index/resource_index/package
 # Register component in rclcpp_components
 echo "foxglove_bridge::FoxgloveBridge;lib/libfoxglove_bridge_component.so" > "${ROS_PREFIX}/share/ament_index/resource_index/rclcpp_components/foxglove_bridge"
 
+# Copy the Foxglove Bridge executable to the correct location
+if [ -f "/workspaces/mowbot_legacy/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge" ]; then
+    cp /workspaces/mowbot_legacy/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge "${ROS_PREFIX}/lib/foxglove_bridge/"
+    chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
+    echo "Foxglove bridge executable copied successfully"
+else
+    echo "Warning: Foxglove bridge executable not found in source package"
+fi
+
 # Make setup script executable
 chmod +x "${ROS_PREFIX}/share/foxglove_bridge/local_setup.sh"
 
