@@ -29,23 +29,16 @@ done
 # Copy package.dsv
 cp "${ROS_PREFIX}/share/package.dsv" "${ROS_PREFIX}/share/foxglove_bridge/" 2>/dev/null || true
 
-# Move executable to proper location
-if [ -f "${ROS_PREFIX}/lib/foxglove_bridge" ]; then
-    mv "${ROS_PREFIX}/lib/foxglove_bridge" "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
-fi
-
-# Register package in ament index
-echo "foxglove_bridge" > "${ROS_PREFIX}/share/ament_index/resource_index/packages/foxglove_bridge"
-
-# Register component in rclcpp_components
-echo "foxglove_bridge::FoxgloveBridge;lib/libfoxglove_bridge_component.so" > "${ROS_PREFIX}/share/ament_index/resource_index/rclcpp_components/foxglove_bridge"
-
 # Copy the Foxglove Bridge executable to the correct location
 # Check multiple possible locations for the executable
-if [ -f "/workspaces/mowbot_legacy/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge" ]; then
-    cp /workspaces/mowbot_legacy/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge "${ROS_PREFIX}/lib/foxglove_bridge/"
+if [ -f "/workspaces/mowbot_legacy/src/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge" ]; then
+    cp /workspaces/mowbot_legacy/src/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge "${ROS_PREFIX}/lib/foxglove_bridge/"
     chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
     echo "Foxglove bridge executable copied from source package"
+elif [ -f "/workspaces/mowbot_legacy/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge" ]; then
+    cp /workspaces/mowbot_legacy/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge "${ROS_PREFIX}/lib/foxglove_bridge/"
+    chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
+    echo "Foxglove bridge executable copied from workspace package"
 elif [ -f "/tmp/foxglove-bridge-pkg/lib/foxglove_bridge" ]; then
     cp /tmp/foxglove-bridge-pkg/lib/foxglove_bridge "${ROS_PREFIX}/lib/foxglove_bridge/"
     chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
@@ -67,6 +60,12 @@ EOF
     chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
     echo "Created wrapper executable"
 fi
+
+# Register package in ament index
+echo "foxglove_bridge" > "${ROS_PREFIX}/share/ament_index/resource_index/packages/foxglove_bridge"
+
+# Register component in rclcpp_components
+echo "foxglove_bridge::FoxgloveBridge;lib/libfoxglove_bridge_component.so" > "${ROS_PREFIX}/share/ament_index/resource_index/rclcpp_components/foxglove_bridge"
 
 # Make setup script executable
 chmod +x "${ROS_PREFIX}/share/foxglove_bridge/local_setup.sh"
