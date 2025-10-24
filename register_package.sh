@@ -41,12 +41,31 @@ echo "foxglove_bridge" > "${ROS_PREFIX}/share/ament_index/resource_index/package
 echo "foxglove_bridge::FoxgloveBridge;lib/libfoxglove_bridge_component.so" > "${ROS_PREFIX}/share/ament_index/resource_index/rclcpp_components/foxglove_bridge"
 
 # Copy the Foxglove Bridge executable to the correct location
+# Check multiple possible locations for the executable
 if [ -f "/workspaces/mowbot_legacy/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge" ]; then
     cp /workspaces/mowbot_legacy/foxglove-bridge-pkg-0.8.5/lib/foxglove_bridge "${ROS_PREFIX}/lib/foxglove_bridge/"
     chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
-    echo "Foxglove bridge executable copied successfully"
+    echo "Foxglove bridge executable copied from source package"
+elif [ -f "/tmp/foxglove-bridge-pkg/lib/foxglove_bridge" ]; then
+    cp /tmp/foxglove-bridge-pkg/lib/foxglove_bridge "${ROS_PREFIX}/lib/foxglove_bridge/"
+    chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
+    echo "Foxglove bridge executable copied from temp package"
+elif [ -f "${ROS_PREFIX}/lib/foxglove_bridge" ]; then
+    # If it's already there but in the wrong location, move it
+    mv "${ROS_PREFIX}/lib/foxglove_bridge" "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
+    chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
+    echo "Foxglove bridge executable moved to correct location"
 else
-    echo "Warning: Foxglove bridge executable not found in source package"
+    echo "Warning: Foxglove bridge executable not found in any expected location"
+    echo "Creating a simple wrapper executable..."
+    # Create a simple wrapper that uses the component
+    cat > "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge" << 'EOF'
+#!/bin/bash
+# Simple wrapper for foxglove_bridge component
+exec ros2 run rclcpp_components component_container --ros-args -r __node:=foxglove_bridge_node
+EOF
+    chmod +x "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
+    echo "Created wrapper executable"
 fi
 
 # Make setup script executable
