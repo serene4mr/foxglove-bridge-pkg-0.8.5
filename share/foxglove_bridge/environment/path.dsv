@@ -1,0 +1,2 @@
+# /opt/ros/humble/share/foxglove_bridge/environment/path.dsv
+export PATH="/opt/ros/humble/bin:$PATH"

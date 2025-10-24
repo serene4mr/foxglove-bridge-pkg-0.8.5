@@ -1,0 +1,9 @@
+# /opt/ros/humble/share/foxglove_bridge/package.dsv
+# Package: foxglove_bridge
+# /opt/ros/humble/share/foxglove_bridge/local_setup.dsv
+# /opt/ros/humble/share/foxglove_bridge/environment/ament_prefix_path.dsv
+# export AMENT_PREFIX_PATH="/opt/ros/humble:$AMENT_PREFIX_PATH"
+# /opt/ros/humble/share/foxglove_bridge/environment/library_path.dsv
+# export LD_LIBRARY_PATH="/opt/ros/humble/lib:$LD_LIBRARY_PATH"
+# /opt/ros/humble/share/foxglove_bridge/environment/path.dsv
+# export PATH="/opt/ros/humble/bin:$PATH"

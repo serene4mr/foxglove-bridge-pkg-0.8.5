@@ -1,0 +1,48 @@
+#!/bin/bash
+# Script to properly register the Foxglove bridge package with ROS 2
+
+set -e
+
+ROS_DISTRO=${ROS_DISTRO:-humble}
+ROS_PREFIX="/opt/ros/${ROS_DISTRO}"
+
+echo "Registering Foxglove bridge package for ROS 2 ${ROS_DISTRO}..."
+
+# Create package directory structure
+mkdir -p "${ROS_PREFIX}/share/foxglove_bridge"
+mkdir -p "${ROS_PREFIX}/share/foxglove_bridge/environment"
+mkdir -p "${ROS_PREFIX}/lib/foxglove_bridge"
+
+# Copy package files to proper location (they should already be in the package)
+cp "${ROS_PREFIX}/share/package.xml" "${ROS_PREFIX}/share/foxglove_bridge/" 2>/dev/null || true
+cp "${ROS_PREFIX}/share/launch/foxglove_bridge_launch.xml" "${ROS_PREFIX}/share/foxglove_bridge/" 2>/dev/null || true
+cp -r "${ROS_PREFIX}/share/cmake" "${ROS_PREFIX}/share/foxglove_bridge/" 2>/dev/null || true
+cp -r "${ROS_PREFIX}/share/environment" "${ROS_PREFIX}/share/foxglove_bridge/" 2>/dev/null || true
+
+# Copy setup files
+for file in "${ROS_PREFIX}/share/local_setup"*; do
+    if [ -f "$file" ]; then
+        cp "$file" "${ROS_PREFIX}/share/foxglove_bridge/" 2>/dev/null || true
+    fi
+done
+
+# Copy package.dsv
+cp "${ROS_PREFIX}/share/package.dsv" "${ROS_PREFIX}/share/foxglove_bridge/" 2>/dev/null || true
+
+# Move executable to proper location
+if [ -f "${ROS_PREFIX}/lib/foxglove_bridge" ]; then
+    mv "${ROS_PREFIX}/lib/foxglove_bridge" "${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
+fi
+
+# Register package in ament index
+echo "foxglove_bridge" > "${ROS_PREFIX}/share/ament_index/resource_index/packages/foxglove_bridge"
+
+# Register component in rclcpp_components
+echo "foxglove_bridge::FoxgloveBridge;lib/libfoxglove_bridge_component.so" > "${ROS_PREFIX}/share/ament_index/resource_index/rclcpp_components/foxglove_bridge"
+
+# Make setup script executable
+chmod +x "${ROS_PREFIX}/share/foxglove_bridge/local_setup.sh"
+
+echo "Foxglove bridge package registration completed successfully!"
+echo "Package location: ${ROS_PREFIX}/share/foxglove_bridge"
+echo "Executable location: ${ROS_PREFIX}/lib/foxglove_bridge/foxglove_bridge"
